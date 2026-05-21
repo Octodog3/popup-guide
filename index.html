@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+  <title>POP-UP LIGHT GUIDE</title>
+
+  <style>
+
+    *{
+      margin:0;
+      padding:0;
+      box-sizing:border-box;
+      font-family:Arial, sans-serif;
+    }
+
+    body{
+      background:#111;
+      color:white;
+      height:100vh;
+
+      display:flex;
+      justify-content:center;
+      align-items:center;
+    }
+
+    .container{
+      width:350px;
+      text-align:center;
+    }
+
+    h1{
+      margin-bottom:15px;
+      font-size:32px;
+    }
+
+    p{
+      color:#aaa;
+      margin-bottom:40px;
+    }
+
+    .store-btn{
+
+      width:100%;
+      height:75px;
+
+      margin-bottom:20px;
+
+      border:none;
+      border-radius:18px;
+
+      font-size:22px;
+      font-weight:bold;
+
+      cursor:pointer;
+
+      transition:0.3s;
+    }
+
+    .store-btn:hover{
+      transform:scale(1.03);
+    }
+
+    .sanrio{
+      background:#ffb6d9;
+      color:#111;
+    }
+
+    .nike{
+      background:#7dd3fc;
+      color:#111;
+    }
+
+    .pokemon{
+      background:#ffe066;
+      color:#111;
+    }
+    .disney{
+    background:#c084fc;
+    color:#111;
+    }
+
+    .gaming{
+    background:#4ade80;
+    color:#111;
+    }
+    .path-container{
+
+      margin-top:50px;
+
+      display:flex;
+      justify-content:center;
+      gap:10px;
+    }
+
+    .light{
+
+      width:28px;
+      height:28px;
+
+      border-radius:50%;
+
+      background:#333;
+
+      transition:0.2s;
+    }
+
+    .active{
+      background:#4da6ff;
+      box-shadow:0 0 15px #4da6ff;
+    }
+
+  </style>
+</head>
+
+<body>
+
+  <div class="container">
+
+    <h1>POP-UP GUIDE</h1>
+
+    <p>원하는 팝업스토어를 선택하세요</p>
+
+    <button class="store-btn sanrio" onclick="guideLight('sanrio')">
+      산리오 팝업
+    </button>
+
+    <button class="store-btn nike" onclick="guideLight('nike')">
+      나이키 이벤트
+    </button>
+
+    <button class="store-btn pokemon" onclick="guideLight('pokemon')">
+      포켓몬 스토어
+    </button>
+
+    <button class="store-btn disney" onclick="guideLight('disney')">
+    디즈니 팝업
+    </button>
+
+    <button class="store-btn gaming" onclick="guideLight('gaming')">
+    게이밍 존
+    </button>
+
+    <div class="path-container">
+
+      <div class="light"></div>
+      <div class="light"></div>
+      <div class="light"></div>
+      <div class="light"></div>
+      <div class="light"></div>
+      <div class="light"></div>
+      <div class="light"></div>
+
+    </div>
+
+  </div>
+
+  <script>
+
+    const lights = document.querySelectorAll('.light');
+
+    function resetLights(){
+
+      lights.forEach(light => {
+        light.classList.remove('active');
+      });
+
+    }
+
+    function guideLight(store){
+
+      resetLights();
+
+      let index = 0;
+
+      const interval = setInterval(() => {
+
+        if(index < lights.length){
+
+          lights[index].classList.add('active');
+
+          index++;
+
+        }else{
+
+          clearInterval(interval);
+
+        }
+
+      }, 180);
+
+      console.log(store + " 경로 활성화");
+
+    }
+
+  </script>
+
+</body>
+</html>
