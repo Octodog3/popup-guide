@@ -174,7 +174,6 @@
       font-size: 16px;
       font-weight: 700;
     }
-    background-image: url('gpt_image.png');
   </style>
 </head>
 
@@ -234,7 +233,12 @@
         name: "1층 정문 입구",
         startX: 285,
         startY: 600,
-        basePath: "M 285 600 L 360 600 L 360 400 L 425 400 L 425 340 L 590 340"
+        paths: {
+        sanrio: "M 285 600 L 360 600 L 360 400 L 425 400 L 425 340 L 600 340 L 600 160",
+        nike: "M 285 600 L 360 600 L 360 400 L 425 400 L 425 340 L 300 340 L 290 330",
+        pokemon: "M 285 600 L 360 600 L 360 500 L 760 500",
+        disney: "M 285 600 L 360 600 L 360 400 L 425 400 L 425 340 L 405 340 L 405 180 L 310 180 L 310 170"
+        }
       },
       qr2: {
         name: "2층 연결 통로 로비",
@@ -263,31 +267,27 @@
         color: "#ffb6d9",
         x: 600,
         y: 160,
-        fromHub: "L 600 340 L 600 160"
       },
       nike: {
-        name: "나이키 이벤트",
+        name: "나이키",
         icon: "👟",
         color: "#333333",
-        x: 735,
-        y: 205,
-        fromHub: "L 610 355 L 735 355 L 735 205"
+        x: 290,
+        y: 330,
       },
       pokemon: {
         name: "포켓몬 스토어",
         icon: "⚡",
         color: "#ffe066",
-        x: 300,
-        y: 505,
-        fromHub: "L 380 355 L 300 355 L 300 505"
+        x: 880,
+        y: 170,
       },
       disney: {
         name: "디즈니 팝업",
         icon: "🏰",
         color: "#c084fc",
-        x: 190,
-        y: 155,
-        fromHub: "L 380 355 L 380 235 L 190 235 L 190 155"
+        x: 310,
+        y: 170,
       },
       gaming: {
         name: "게이밍 존",
@@ -295,7 +295,6 @@
         color: "#4ade80",
         x: 815,
         y: 510,
-        fromHub: "L 610 355 L 815 355 L 815 510"
       }
     };
 
@@ -342,7 +341,7 @@
       startMarker.style.opacity = "1";
       destMarker.style.opacity = "1";
 
-      const fullPath = `${activeQR.basePath} ${activeStore.fromHub}`;
+      const fullPath = activeQR.paths[storeKey];
       routePath.setAttribute("d", fullPath);
       routePath.style.stroke = activeStore.color === "#333333" ? "#ffffff" : activeStore.color;
 
