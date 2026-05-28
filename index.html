@@ -1,208 +1,383 @@
 <!DOCTYPE html>
 <html lang="ko">
-
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-  <title>POP-UP LIGHT GUIDE</title>
+  <title>POP-UP GUIDE</title>
 
   <style>
-
     * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
-      font-family: Arial, sans-serif;
+      font-family: 'Malgun Gothic', Arial, sans-serif;
     }
 
     body {
       background: #111;
       color: white;
-      height: 100vh;
-
+      min-height: 100vh;
       display: flex;
       justify-content: center;
       align-items: center;
+      padding: 20px;
     }
 
     .container {
-      width: 350px;
+      width: 100%;
+      max-width: 420px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .header-text {
       text-align: center;
     }
 
     h1 {
-      margin-bottom: 15px;
-      font-size: 32px;
+      font-size: 28px;
+      margin-bottom: 8px;
+      letter-spacing: -0.5px;
     }
 
     p {
       color: #aaa;
-      margin-bottom: 40px;
+      font-size: 14px;
+    }
+
+    .current-location-badge {
+      display: inline-block;
+      background: #222;
+      color: #4ade80;
+      padding: 7px 16px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 700;
+      margin-top: 12px;
+      border: 1px solid #333;
+    }
+
+    .map-box {
+      width: 100%;
+      aspect-ratio: 1000 / 700;
+      background-color: #1c1c1c;
+      background-image: url('gpt_image.png');
+      background-size: contain;
+      background-repeat: no-repeat;
+      background-position: center;
+      border-radius: 20px;
+      position: relative;
+      border: 2px solid #333;
+      overflow: hidden;
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
+    }
+
+    svg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    .route-line {
+      fill: none;
+      stroke: #ff76a3;
+      stroke-width: 10;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      filter: drop-shadow(0 0 8px rgba(255, 118, 163, 0.9));
+      transition: stroke-dashoffset 2.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .marker {
+      opacity: 0;
+      transition: opacity 0.35s ease;
+    }
+
+    .marker circle {
+      stroke: white;
+      stroke-width: 3;
+    }
+
+    .marker-bg {
+      fill: rgba(0, 0, 0, 0.85);
+      rx: 8px;
+    }
+
+    .marker-text {
+      fill: white;
+      font-size: 15px;
+      font-weight: 700;
+      text-anchor: middle;
+    }
+
+    .btn-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 10px;
     }
 
     .store-btn {
       width: 100%;
-      height: 75px;
-
-      margin-bottom: 20px;
-
+      height: 54px;
       border: none;
-      border-radius: 18px;
-
-      font-size: 22px;
-      font-weight: bold;
-
+      border-radius: 15px;
+      font-size: 16px;
+      font-weight: 800;
       cursor: pointer;
-
-      transition: 0.3s;
+      transition: transform 0.15s ease, filter 0.15s ease;
     }
 
     .store-btn:hover {
-      transform: scale(1.05);
-      box-shadow: 0 0 20px rgba(255, 255, 255, 0.4);
+      filter: brightness(1.08);
     }
 
-    .sanrio {
-      background: #ffb6d9;
-      color: #111;
+    .store-btn:active {
+      transform: scale(0.97);
     }
 
-    .nike {
-      background: #7dd3fc;
-      color: #111;
+    .sanrio { background: #ffb6d9; color: #111; }
+    .nike { background: #333; color: #fff; }
+    .pokemon { background: #ffe066; color: #111; }
+    .disney { background: #c084fc; color: #111; }
+    .gaming { background: #4ade80; color: #111; }
+
+    .guide-message {
+      min-height: 24px;
+      text-align: center;
+      color: #ddd;
+      font-size: 14px;
+      line-height: 1.4;
     }
 
-    .pokemon {
-      background: #ffe066;
-      color: #111;
+    /* 안내 시작 후 화면 상태 */
+    .container.navigating {
+      max-width: 760px;
+      gap: 14px;
     }
 
-    .disney {
-      background: #c084fc;
-      color: #111;
+    .container.navigating .header-text p {
+      display: none;
     }
 
-    .gaming {
-      background: #4ade80;
-      color: #111;
+    .container.navigating .map-box {
+      width: 100%;
+      max-height: 78vh;
     }
 
-    .path-container {
-      margin-top: 50px;
-
-      display: flex;
-      justify-content: center;
-      gap: 10px;
+    .container.navigating .btn-grid {
+      display: none;
     }
 
-    .light {
-      width: 28px;
-      height: 28px;
-
-      border-radius: 50%;
-
-      background: #333;
-
-      transition: 0.2s;
+    .container.navigating .guide-message {
+      font-size: 16px;
+      font-weight: 700;
     }
-
-    .active {
-      background: #4da6ff;
-      box-shadow: 0 0 15px #4da6ff;
-    }
-
   </style>
 </head>
 
 <body>
-
   <div class="container">
-
-    <h1>POP-UP GUIDE</h1>
-
-    <p>원하는 팝업스토어를 선택하세요</p>
-
-    <button class="store-btn sanrio" onclick="guideLight('sanrio')">
-      산리오 팝업
-    </button>
-
-    <button class="store-btn nike" onclick="guideLight('nike')">
-      나이키 이벤트
-    </button>
-
-    <button class="store-btn pokemon" onclick="guideLight('pokemon')">
-      포켓몬 스토어
-    </button>
-
-    <button class="store-btn disney" onclick="guideLight('disney')">
-      디즈니 팝업
-    </button>
-
-    <button class="store-btn gaming" onclick="guideLight('gaming')">
-      게이밍 존
-    </button>
-
-    <div class="path-container">
-      <div class="light"></div>
-      <div class="light"></div>
-      <div class="light"></div>
-      <div class="light"></div>
-      <div class="light"></div>
-      <div class="light"></div>
-      <div class="light"></div>
+    <div class="header-text">
+      <h1>POP-UP GUIDE</h1>
+      <p>원하시는 팝업스토어를 선택하세요</p>
+      <div class="current-location-badge" id="location-badge">위치 확인 중...</div>
     </div>
 
+    <div class="map-box" aria-label="팝업스토어 안내 지도">
+      <svg viewBox="0 0 1000 700" preserveAspectRatio="xMidYMid meet">
+        <path id="route" class="route-line" d="" />
+
+        <g id="start-marker" class="marker">
+          <circle r="18" fill="#4da6ff" />
+          <text dy="7" font-size="20" text-anchor="middle">📍</text>
+          <rect class="marker-bg" x="-42" y="-55" width="84" height="26" />
+          <text class="marker-text" x="0" y="-37">현위치</text>
+        </g>
+
+        <g id="dest-marker" class="marker">
+          <circle id="dest-circle" r="18" fill="#ffb6d9" />
+          <text id="dest-icon" dy="7" font-size="20" text-anchor="middle">🎀</text>
+          <rect id="dest-label-bg" class="marker-bg" x="-60" y="-55" width="120" height="26" />
+          <text id="dest-label" class="marker-text" x="0" y="-37">산리오 팝업</text>
+        </g>
+      </svg>
+    </div>
+
+    <div class="guide-message" id="guide-message">버튼을 누르면 현재 위치에서 목적지까지 경로가 표시됩니다.</div>
+
+    <div class="btn-grid">
+      <button class="store-btn sanrio" onclick="guideTo('sanrio')">산리오 팝업</button>
+      <button class="store-btn nike" onclick="guideTo('nike')">나이키 이벤트</button>
+      <button class="store-btn pokemon" onclick="guideTo('pokemon')">포켓몬 스토어</button>
+      <button class="store-btn disney" onclick="guideTo('disney')">디즈니 팝업</button>
+      <button class="store-btn gaming" onclick="guideTo('gaming')">게이밍 존</button>
+    </div>
   </div>
 
   <script>
+    /*
+      사용법:
+      1. HTML 파일과 같은 폴더에 지도 이미지를 gpt_image.png 이름으로 넣기
+      2. QR별 링크 예시:
+         index.html?qr=qr1
+         index.html?qr=qr2
+         index.html?qr=qr3
+         index.html?qr=qr4
+      3. 좌표가 조금 안 맞으면 아래 qrData와 storeData의 x, y, path만 수정하면 됨
+    */
 
-    const lights = document.querySelectorAll('.light');
+    const qrData = {
+      qr1: {
+        name: "1층 정문 입구",
+        startX: 285,
+        startY: 600,
+        basePath: "M 285 600 L 360 600 L 360 400 L 425 400 L 425 340 L 590 340"
+      },
+      qr2: {
+        name: "2층 연결 통로 로비",
+        startX: 760,
+        startY: 355,
+        basePath: "M 760 355 L 610 355"
+      },
+      qr3: {
+        name: "화장실 앞 복도",
+        startX: 150,
+        startY: 235,
+        basePath: "M 150 235 L 380 235 L 380 355"
+      },
+      qr4: {
+        name: "중앙 중문 앞",
+        startX: 475,
+        startY: 355,
+        basePath: "M 475 355"
+      }
+    };
 
-    let currentAnimation = null;
+    const storeData = {
+      sanrio: {
+        name: "산리오 팝업",
+        icon: "🎀",
+        color: "#ffb6d9",
+        x: 600,
+        y: 160,
+        fromHub: "L 600 340 L 600 160"
+      },
+      nike: {
+        name: "나이키 이벤트",
+        icon: "👟",
+        color: "#333333",
+        x: 735,
+        y: 205,
+        fromHub: "L 610 355 L 735 355 L 735 205"
+      },
+      pokemon: {
+        name: "포켓몬 스토어",
+        icon: "⚡",
+        color: "#ffe066",
+        x: 300,
+        y: 505,
+        fromHub: "L 380 355 L 300 355 L 300 505"
+      },
+      disney: {
+        name: "디즈니 팝업",
+        icon: "🏰",
+        color: "#c084fc",
+        x: 190,
+        y: 155,
+        fromHub: "L 380 355 L 380 235 L 190 235 L 190 155"
+      },
+      gaming: {
+        name: "게이밍 존",
+        icon: "🎮",
+        color: "#4ade80",
+        x: 815,
+        y: 510,
+        fromHub: "L 610 355 L 815 355 L 815 510"
+      }
+    };
 
-    function resetLights() {
+    let currentQR = "qr1";
 
-      lights.forEach(light => {
-        light.classList.remove('active');
-      });
+    function initLocation() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const qrParam = urlParams.get("qr");
 
-    }
-
-    function guideLight(store) {
-
-      // 기존 애니메이션 종료
-      if (currentAnimation) {
-        clearInterval(currentAnimation);
+      if (qrParam && qrData[qrParam]) {
+        currentQR = qrParam;
       }
 
-      // 불빛 초기화
-      resetLights();
-
-      let index = 0;
-
-      currentAnimation = setInterval(() => {
-
-        if (index < lights.length) {
-
-          lights[index].classList.add('active');
-
-          index++;
-
-        } else {
-
-          clearInterval(currentAnimation);
-
-        }
-
-      }, 180);
-
-      console.log(store + " 경로 활성화");
-
+      document.getElementById("location-badge").innerText = `현위치: ${qrData[currentQR].name}`;
     }
 
+    function guideTo(storeKey) {
+      const activeQR = qrData[currentQR];
+      const activeStore = storeData[storeKey];
+
+      if (!activeStore) return;
+
+      const routePath = document.getElementById("route");
+      const startMarker = document.getElementById("start-marker");
+      const destMarker = document.getElementById("dest-marker");
+      const destCircle = document.getElementById("dest-circle");
+      const destIcon = document.getElementById("dest-icon");
+      const destLabel = document.getElementById("dest-label");
+      const destLabelBg = document.getElementById("dest-label-bg");
+      const guideMessage = document.getElementById("guide-message");
+      const container = document.querySelector(".container");
+
+      startMarker.setAttribute("transform", `translate(${activeQR.startX}, ${activeQR.startY})`);
+      destMarker.setAttribute("transform", `translate(${activeStore.x}, ${activeStore.y})`);
+
+      destCircle.setAttribute("fill", activeStore.color);
+      destIcon.textContent = activeStore.icon;
+      destLabel.textContent = activeStore.name;
+
+      const labelWidth = Math.max(110, activeStore.name.length * 16);
+      destLabelBg.setAttribute("x", String(-labelWidth / 2));
+      destLabelBg.setAttribute("width", String(labelWidth));
+
+      startMarker.style.opacity = "1";
+      destMarker.style.opacity = "1";
+
+      const fullPath = `${activeQR.basePath} ${activeStore.fromHub}`;
+      routePath.setAttribute("d", fullPath);
+      routePath.style.stroke = activeStore.color === "#333333" ? "#ffffff" : activeStore.color;
+
+      const pathLength = routePath.getTotalLength();
+
+      // 이전 경로 애니메이션 상태 초기화
+      routePath.style.transition = "none";
+      routePath.style.strokeDasharray = pathLength;
+      routePath.style.strokeDashoffset = pathLength;
+
+      // 안내가 시작되면 버튼을 숨기고 지도 화면을 크게 표시
+      container.classList.add("navigating");
+      guideMessage.innerText = `${activeQR.name}에서 ${activeStore.name}까지 안내를 시작합니다.`;
+      history.pushState({ navigating: true }, "", window.location.href);
+
+      // 브라우저가 '선이 숨겨진 상태'를 먼저 인식한 뒤, 다음 프레임에서 선을 그리게 함
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          routePath.style.transition = "stroke-dashoffset 2.4s cubic-bezier(0.4, 0, 0.2, 1)";
+          routePath.style.strokeDashoffset = "0";
+        });
+      });
+    }
+
+    window.addEventListener("load", initLocation);
+
+    window.addEventListener("popstate", function () {
+    document.querySelector(".container").classList.remove("navigating");
+
+    document.getElementById("route").setAttribute("d", "");
+    document.getElementById("start-marker").style.opacity = "0";
+    document.getElementById("dest-marker").style.opacity = "0";
+
+    document.getElementById("guide-message").innerText =
+      "버튼을 누르면 현재 위치에서 목적지까지 경로가 표시됩니다.";
+  }); 
   </script>
-
 </body>
-
 </html>
