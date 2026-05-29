@@ -87,7 +87,7 @@
       stroke-linecap: round;
       stroke-linejoin: round;
       filter: drop-shadow(0 0 8px rgba(255, 118, 163, 0.9));
-      transition: stroke-dashoffset 2.4s cubic-bezier(0.4, 0, 0.2, 1);
+      transition: stroke-dashoffset 3.5s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
     .marker {
@@ -360,7 +360,7 @@
       // 브라우저가 '선이 숨겨진 상태'를 먼저 인식한 뒤, 다음 프레임에서 선을 그리게 함
       requestAnimationFrame(() => {
         requestAnimationFrame(() => {
-          routePath.style.transition = "stroke-dashoffset 2.4s cubic-bezier(0.4, 0, 0.2, 1)";
+          routePath.style.transition = "stroke-dashoffset 3.5s cubic-bezier(0.4, 0, 0.2, 1)";
           routePath.style.strokeDashoffset = "0";
         });
       });
